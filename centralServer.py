@@ -1,3 +1,4 @@
+import pickle
 import socket
 import sys
 import threading
@@ -25,11 +26,11 @@ threads = []
 clientInfo = {}
 clientsid=[]
 Send_string = "FILESEND"
-
+clientFilesList=[]
 
 def receiveAndSendMsg ( i,t ):
     while True:
-        
+        clients[i].send("ID".encode())
         clients[i].send(clientsid[i].encode())
         msg = clients[i].recv(1024)
         msg = msg.decode("utf-8")
@@ -41,6 +42,7 @@ for i in range(noOfClients):
     clients.append(client)
     clientAddresses.append(addr)
     clientNames.append(client.recv(SIZE).decode("utf-8"))
+    clientFilesList.append(pickle.loads(client.recv(SIZE)))
     port_client = addr[1]
     id = str(uuid.uuid5(uuid.NAMESPACE_URL, str(port_client)))
     clientsid.append(id)
@@ -48,6 +50,8 @@ for i in range(noOfClients):
     clientInfo[id]["connection"]=client
     clientInfo[id]["address"] = addr
     clientInfo[id]["active"] = True
+    clientInfo[id]["files"] = clientFilesList[i]
+    print(clientInfo[id])
 
 
     threads.append(threading.Thread(target=receiveAndSendMsg,args=(i,6556)))

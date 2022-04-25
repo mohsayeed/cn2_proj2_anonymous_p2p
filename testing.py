@@ -1,4 +1,5 @@
-import uuid
-url = "hi"
-id = (uuid.uuid5(uuid.NAMESPACE_URL, url))
-print((str(id)))
+import pickle
+y=[0,12,6,8,3,2,10] 
+print(data)
+x = pickle.loads(data)
+print(type(x))

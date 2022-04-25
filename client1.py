@@ -1,7 +1,10 @@
+import pickle
 import socket
 import sys
 import threading
 import tkinter
+def toBytes(x):
+    return pickle.dumps(x)
 
 clientSocket_3 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 hostIpAddr = input("Please Provide the Server IP Address : ")
@@ -12,33 +15,24 @@ clientSocket_3.send(bytes(clientName,"utf-8"))
 print("Transfering you to Chat Room....")
 SIZE=1024
 Send_string = "FILESEND"
+client1_Files=['file1.txt','file2.txt']
+clientSocket_3.send(toBytes(client1_Files))
+
 
 def receiveMsg ( msgList ):
+    while True:
+        message = clientSocket_3.recv(1024)
+        message = message.decode("utf-8")
+        if ( message.find("ACTIVE MEMBERS") != -1 ):
+            msgList.insert(tkinter.END,message)
+        elif ( message.find("has been added to the Chat") != -1 ):
+            msgList.insert(tkinter.END,'                                {}'.format(message))
+        elif(message.find("ID")!=-1):
+            msgList.insert(tkinter.END,'Your Generated {}'.format(message))
+        else:
+            msgList.insert(tkinter.END,'                                                                {}'.format(message))
+        
 
-	while True:
-		message = clientSocket_3.recv(1024)
-		message = message.decode("utf-8")
-
-		if ( message.find("ACTIVE MEMBERS") != -1 ):
-			msgList.insert(tkinter.END,message)
-
-		elif ( message.find("has been added to the Chat") != -1 ):
-			msgList.insert(tkinter.END,'                                {}'.format(message))
-
-		elif (message.find(Send_string)!=-1):
-			msgList.insert(tkinter.END,'                                                                {}'.format(message))
-			x = message.split(" ")
-			file = open(("client3/"+x[1]),"wb")
-			
-			data = clientSocket_3.recv(SIZE)
-			file.write(data)
-			while (len(data) >= SIZE ):
-				data = clientSocket_3.recv(SIZE)
-				file.write(data)
-			file.close()
-
-		else:
-			msgList.insert(tkinter.END,'                                                                {}'.format(message))
 
 
 def sendMsg ( textInput, msgList, clientSocket_3 ):
