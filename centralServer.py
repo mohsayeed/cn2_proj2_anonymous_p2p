@@ -3,7 +3,8 @@ import socket
 import sys
 import threading
 import uuid
-
+import globals as g
+import numpy as np
 SIZE = 1024
 
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -51,8 +52,10 @@ for i in range(noOfClients):
     clientInfo[id]["address"] = addr
     clientInfo[id]["active"] = True
     clientInfo[id]["files"] = clientFilesList[i]
-    print(clientInfo[id])
+    # g.no_of_hops = np.random.randint(size=(i+1,i+1),low=1, high=i+1, dtype=int)
+    # print(g.no_of_hops)
 
+    
 
     threads.append(threading.Thread(target=receiveAndSendMsg,args=(i,6556)))
     threads[i].daemon = True

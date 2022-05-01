@@ -3,8 +3,8 @@ import socket
 import sys
 import threading
 import tkinter
-def toBytes(x):
-    return pickle.dumps(x)
+import globals as g
+
 
 clientSocket_3 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 hostIpAddr = input("Please Provide the Server IP Address : ")
@@ -15,8 +15,8 @@ clientSocket_3.send(bytes(clientName,"utf-8"))
 print("Transfering you to Chat Room....")
 SIZE=1024
 Send_string = "FILESEND"
-client1_Files=['file3.txt','file4.txt']
-clientSocket_3.send(toBytes(client1_Files))
+client1_Files=['file1.txt','file2.txt']
+clientSocket_3.send(g.toBytes(client1_Files))
 
 
 def receiveMsg ( msgList ):
