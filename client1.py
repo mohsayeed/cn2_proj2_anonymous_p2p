@@ -1,9 +1,12 @@
+from ctypes import sizeof
 import pickle
 import socket
 import sys
 import threading
 import tkinter
 import globals as g
+left_neigh_addr=0
+right_neigh_addr=0
 
 
 clientSocket_3 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -18,20 +21,53 @@ Send_string = "FILESEND"
 client1_Files=['file1.txt','file2.txt']
 clientSocket_3.send(g.toBytes(client1_Files))
 
+#////////////////////tcp////////////////////
+
+serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+hostName = socket.gethostname()
+host_ip_addrss= socket.gethostbyname(hostName)
+print("Client1 IP Address : " + host_ip_addrss)
+port = 30001
+print("Client1 Connected to tcp port")
+serverSocket.bind((host_ip_addrss, port))
+
+print("Hostname of client1 socket : " + hostName)
+serverSocket.listen()
+
+#//////////////////////////////////////////
+
+
+
+#//////////////////// udp//////////////////
+localIP = "127.0.0.1"
+localPort = 20001
+bufferSize = 1024
+
+UDPServerSocket = socket.socket(family = socket.AF_INET, type = socket.SOCK_DGRAM)
+UDPServerSocket.bind((localIP, localPort))
+
+#/////////////////////////////////////
+# print(type(g.toBytes((host_ip_addrss,port))))
+clientSocket_3.send(g.toBytes((host_ip_addrss, port)))
+clientSocket_3.send("hi how are you amma".encode())
+
+
+#/////////////////
 
 def receiveMsg ( msgList ):
-    while True:
-        message = clientSocket_3.recv(1024)
-        message = message.decode("utf-8")
-        if ( message.find("ACTIVE MEMBERS") != -1 ):
-            msgList.insert(tkinter.END,message)
-        elif ( message.find("has been added to the Chat") != -1 ):
-            msgList.insert(tkinter.END,'                                {}'.format(message))
-        elif(message.find("ID")!=-1):
-            msgList.insert(tkinter.END,'Your Generated {}'.format(message))
-        else:
-            msgList.insert(tkinter.END,'                                                                {}'.format(message))
-        
+	while True:
+		message = clientSocket_3.recv(1024)
+		message = message.decode("utf-8")
+		print(message)
+		if ( message.find("ACTIVE MEMBERS") != -1 ):
+			msgList.insert(tkinter.END,message)
+		elif ( message.find("has been added to the Chat") != -1 ):
+			msgList.insert(tkinter.END,'                                {}'.format(message))
+		elif(message.find("ID")!=-1):
+			msgList.insert(tkinter.END,'Your Generated {}'.format(message))
+		else:
+			msgList.insert(tkinter.END,'                                                                {}'.format(message))
+		
 
 
 
@@ -68,8 +104,8 @@ frameMsgs = tkinter.Frame(master=chatWindow)
 scrollBar = tkinter.Scrollbar(master=frameMsgs)
 
 msgList = tkinter.Listbox (
-    master=frameMsgs, 
-    yscrollcommand=scrollBar.set
+	master=frameMsgs, 
+	yscrollcommand=scrollBar.set
 )
 
 scrollBar.pack(side=tkinter.RIGHT, fill=tkinter.Y, expand=False)
@@ -85,9 +121,9 @@ textInput.bind("<Return>", lambda x: sendMsg(textInput, msgList, clientSocket_3)
 textInput.insert(0, "Please enter your message here")
 
 sendButton = tkinter.Button(
-    master=chatWindow,
-    text='send',
-    command=lambda: sendMsg(textInput, msgList, clientSocket_3)
+	master=chatWindow,
+	text='send',
+	command=lambda: sendMsg(textInput, msgList, clientSocket_3)
 )
 
 frameEntry.grid(row=1, column=0, padx=10, sticky="ew")
